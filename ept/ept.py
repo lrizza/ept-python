@@ -17,7 +17,9 @@ from .laz import LAZ
 
 
 class EPT(object):
-    def __init__(self, url, bounds=None, queryResolution=None):
+    def __init__(
+        self, url, bounds=None, queryResolution=None, decompression_selection=None
+    ):
         query = None
         if ('?' in url):
             [url, query] = url.split('?', 1)
@@ -40,6 +42,7 @@ class EPT(object):
         self.endpoint = Endpoint(self.root_url, self.query)
         self.info = self.get_info()
         self.computedDepth = False
+        self.decompression_selection = decompression_selection
 
     def as_laspy(self, strictbounds=True):
         """
@@ -100,7 +103,10 @@ class EPT(object):
                 url = "/ept-data/" + key.id() + ".laz"
                 await tasks.put(self.endpoint.aget(url, session))
 
-        laz = [LAZ(tasks.data[i]["result"]) for i in tasks.data]
+        laz = [
+            LAZ(tasks.data[i]["result"], self.decompression_selection)
+            for i in tasks.data
+        ]
         return laz
 
     async def overlaps(self):
