@@ -17,8 +17,9 @@ from .laz import LAZ
 
 
 class EPT(object):
-
-    def __init__(self, url, bounds=None, queryResolution=None, decompressionInt=None):
+    def __init__(
+        self, url, bounds=None, queryResolution=None, decompressionSelection=None
+    ):
         query = None
         if "?" in url:
             [url, query] = url.split("?", 1)
@@ -43,7 +44,7 @@ class EPT(object):
         self.endpoint = Endpoint(self.root_url, self.query)
         self.info = self.get_info()
         self.computedDepth = False
-        self.decompressionInt = decompressionInt
+        self.decompressionSelection = decompressionSelection
 
     def as_laspy(self, strictbounds=True):
         """
@@ -105,7 +106,7 @@ class EPT(object):
                 await tasks.put(self.endpoint.aget(url, session))
 
         laz = [
-            LAZ(tasks.data[i]["result"], self.decompression_selection)
+            LAZ(tasks.data[i]["result"], self.decompressionSelection)
             for i in tasks.data
         ]
         return laz
