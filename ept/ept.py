@@ -18,11 +18,11 @@ from .laz import LAZ
 
 class EPT(object):
     def __init__(
-        self, url, bounds=None, queryResolution=None, decompression_selection=None
+        self, url, bounds=None, queryResolution=None, decompressionSelection=None
     ):
         query = None
-        if ('?' in url):
-            [url, query] = url.split('?', 1)
+        if "?" in url:
+            [url, query] = url.split("?", 1)
 
         if url.endswith("/"):
             url = url[:-1]
@@ -30,7 +30,9 @@ class EPT(object):
         if url.endswith(".json"):
             # gave us path to EPT root
             p = urlsplit(url)
-            url = SplitResult(p.scheme, p.netloc, os.path.dirname(p.path), "", "").geturl()
+            url = SplitResult(
+                p.scheme, p.netloc, os.path.dirname(p.path), "", ""
+            ).geturl()
 
         self.query = query
         self.root_url = url
@@ -42,7 +44,7 @@ class EPT(object):
         self.endpoint = Endpoint(self.root_url, self.query)
         self.info = self.get_info()
         self.computedDepth = False
-        self.decompression_selection = decompression_selection
+        self.decompressionSelection = decompressionSelection
 
     def as_laspy(self, strictbounds=True):
         """
@@ -104,7 +106,7 @@ class EPT(object):
                 await tasks.put(self.endpoint.aget(url, session))
 
         laz = [
-            LAZ(tasks.data[i]["result"], self.decompression_selection)
+            LAZ(tasks.data[i]["result"], self.decompressionSelection)
             for i in tasks.data
         ]
         return laz
